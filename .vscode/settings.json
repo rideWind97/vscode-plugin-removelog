@@ -1,0 +1,32 @@
+{
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.validate": ["javascript", "typescript"],
+  "files.exclude": {
+    "**/dist": true,
+    "**/out": true,
+    "**/*.vsix": true,
+    "**/node_modules": true
+  },
+  "search.exclude": {
+    "**/dist": true,
+    "**/out": true,
+    "**/*.vsix": true,
+    "**/node_modules": true
+  },
+  "files.watcherExclude": {
+    "**/dist/**": true,
+    "**/out/**": true,
+    "**/node_modules/**": true
+  },
+  "extensions.ignoreRecommendations": false,
+  "workbench.editor.enablePreview": false,
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.defaultProfile.windows": "PowerShell"
+}
