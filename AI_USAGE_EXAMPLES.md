@@ -4,10 +4,10 @@
 
 ### 1. 配置API密钥
 
-首次使用AI功能时，插件会提示你输入OpenAI API密钥：
+首次使用AI功能时，插件会提示你输入DeepSeek API密钥：
 
 1. 在命令面板中执行任意AI命令
-2. 在弹出的输入框中输入你的OpenAI API密钥
+2. 在弹出的输入框中输入你的DeepSeek API密钥
 3. 密钥会自动保存到VS Code全局配置中
 
 ### 2. 基本使用流程
@@ -205,7 +205,7 @@ def calculate_average(numbers: List[Union[int, float]]) -> float:
 A: 可以调整 `maxTokens` 配置，减少响应长度；或选择更快的模型如 `gpt-3.5-turbo`
 
 ### Q: 如何保护我的API密钥？
-A: API密钥存储在VS Code全局配置中，不会上传到云端。建议定期更换密钥
+A: DeepSeek API密钥存储在VS Code全局配置中，不会上传到云端。建议定期更换密钥
 
 ### Q: AI建议不准确怎么办？
 A: AI分析基于代码上下文，建议结合实际情况判断。可以多次运行获取不同角度的建议

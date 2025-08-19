@@ -1,0 +1,45 @@
+/* VS Code Theme Variables */
+:root {
+  --vscode-foreground: #cccccc;
+  --vscode-editor-background: #1e1e1e;
+  --vscode-textLink-foreground: #3794ff;
+  --vscode-button-background: #0e639c;
+  --vscode-button-foreground: #ffffff;
+  --vscode-button-hoverBackground: #1177bb;
+  --vscode-button-secondaryBackground: #3a3d41;
+  --vscode-button-secondaryForeground: #cccccc;
+  --vscode-button-secondaryHoverBackground: #45494e;
+  --vscode-input-background: #3c3c3c;
+  --vscode-input-foreground: #cccccc;
+  --vscode-input-border: #3c3c3c;
+  --vscode-focusBorder: #007acc;
+  --vscode-selection-background: #264f78;
+  --vscode-textSeparator-foreground: #606060;
+  --vscode-textBlockQuote-background: #7f7f7f1a;
+  --vscode-textBlockQuote-border: #7f7f7f3d;
+  --vscode-textCodeBlock-background: #7f7f7f1a;
+  --vscode-textPreformat-foreground: #d7d7d7;
+  --vscode-textPreformat-background: #1e1e1e;
+  --vscode-textLink-activeForeground: #3794ff;
+  --vscode-textLink-foreground: #3794ff;
+  --vscode-textPreformat-foreground: #d7d7d7;
+  --vscode-textPreformat-background: #1e1e1e;
+  --vscode-textBlockQuote-background: #7f7f7f1a;
+  --vscode-textBlockQuote-border: #7f7f7f3d;
+  --vscode-textCodeBlock-background: #7f7f7f1a;
+  --vscode-textSeparator-foreground: #606060;
+  --vscode-selection-background: #264f78;
+  --vscode-focusBorder: #007acc;
+  --vscode-input-border: #3c3c3c;
+  --vscode-input-foreground: #cccccc;
+  --vscode-input-background: #3c3c3c;
+  --vscode-button-secondaryHoverBackground: #45494e;
+  --vscode-button-secondaryForeground: #cccccc;
+  --vscode-button-secondaryBackground: #3a3d41;
+  --vscode-button-hoverBackground: #1177bb;
+  --vscode-button-foreground: #ffffff;
+  --vscode-button-background: #0e639c;
+  --vscode-textLink-foreground: #3794ff;
+  --vscode-editor-background: #1e1e1e;
+  --vscode-foreground: #cccccc;
+}

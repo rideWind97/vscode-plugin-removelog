@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { AIService } from "./ai-service";
+import { WebviewManager } from "./webview-manager";
 
 // 日志语句的正则表达式模式
 const LOG_PATTERNS = [
@@ -17,6 +18,8 @@ const LOG_PATTERNS = [
 
 // AI服务实例
 let aiService: AIService;
+// Webview管理器实例
+let webviewManager: WebviewManager;
 
 // 移除文本中的日志语句
 function removeLogsFromText(text: string): { text: string; count: number } {
@@ -37,23 +40,23 @@ function removeLogsFromText(text: string): { text: string; count: number } {
 // 获取文件语言标识
 function getLanguageId(document: vscode.TextDocument): string {
   const languageMap: { [key: string]: string } = {
-    'javascript': 'JavaScript',
-    'typescript': 'TypeScript',
-    'javascriptreact': 'React JSX',
-    'typescriptreact': 'React TSX',
-    'vue': 'Vue',
-    'python': 'Python',
-    'java': 'Java',
-    'cpp': 'C++',
-    'c': 'C',
-    'csharp': 'C#',
-    'php': 'PHP',
-    'ruby': 'Ruby',
-    'go': 'Go',
-    'rust': 'Rust',
-    'swift': 'Swift'
+    javascript: "JavaScript",
+    typescript: "TypeScript",
+    javascriptreact: "React JSX",
+    typescriptreact: "React TSX",
+    vue: "Vue",
+    python: "Python",
+    java: "Java",
+    cpp: "C++",
+    c: "C",
+    csharp: "C#",
+    php: "PHP",
+    ruby: "Ruby",
+    go: "Go",
+    rust: "Rust",
+    swift: "Swift",
   };
-  
+
   return languageMap[document.languageId] || document.languageId;
 }
 
@@ -103,14 +106,15 @@ async function aiAnalyzeLogs(editor: vscode.TextEditor): Promise<void> {
       },
       async () => {
         const analysis = await aiService.analyzeLogs(text, language);
-        
-        // 创建新的文档显示分析结果
-        const doc = await vscode.workspace.openTextDocument({
-          content: `# AI日志分析结果\n\n## 文件: ${document.fileName}\n## 语言: ${language}\n\n${analysis}`,
-          language: 'markdown'
-        });
-        
-        await vscode.window.showTextDocument(doc, { preview: false });
+
+        // 使用webview显示分析结果
+        const panel = webviewManager.createWebviewPanel(
+          "AI日志分析结果",
+          "removeLogAI.analysis",
+          analysis,
+          language,
+          document.fileName
+        );
       }
     );
   } catch (error) {
@@ -133,14 +137,15 @@ async function aiGenerateLogs(editor: vscode.TextEditor): Promise<void> {
       },
       async () => {
         const generatedCode = await aiService.generateLogs(text, language);
-        
-        // 创建新的文档显示生成的代码
-        const doc = await vscode.workspace.openTextDocument({
-          content: `# AI生成的日志代码\n\n## 文件: ${document.fileName}\n## 语言: ${language}\n\n${generatedCode}`,
-          language: 'markdown'
-        });
-        
-        await vscode.window.showTextDocument(doc, { preview: false });
+
+        // 使用webview显示生成的代码
+        const panel = webviewManager.createWebviewPanel(
+          "AI生成的日志代码",
+          "removeLogAI.generation",
+          generatedCode,
+          language,
+          document.fileName
+        );
       }
     );
   } catch (error) {
@@ -163,14 +168,15 @@ async function aiCodeQuality(editor: vscode.TextEditor): Promise<void> {
       },
       async () => {
         const analysis = await aiService.analyzeCodeQuality(text, language);
-        
-        // 创建新的文档显示分析结果
-        const doc = await vscode.workspace.openTextDocument({
-          content: `# AI代码质量分析\n\n## 文件: ${document.fileName}\n## 语言: ${language}\n\n${analysis}`,
-          language: 'markdown'
-        });
-        
-        await vscode.window.showTextDocument(doc, { preview: false });
+
+        // 使用webview显示分析结果
+        const panel = webviewManager.createWebviewPanel(
+          "AI代码质量分析",
+          "removeLogAI.quality",
+          analysis,
+          language,
+          document.fileName
+        );
       }
     );
   } catch (error) {
@@ -193,7 +199,7 @@ async function aiSmartRemoveLogs(editor: vscode.TextEditor): Promise<void> {
       },
       async () => {
         const result = await aiService.smartRemoveLogs(text, language);
-        
+
         if (result.removedCount === 0) {
           vscode.window.showInformationMessage("AI建议保留所有日志语句");
           return;
@@ -202,7 +208,9 @@ async function aiSmartRemoveLogs(editor: vscode.TextEditor): Promise<void> {
         // 询问用户是否应用AI的建议
         const action = await vscode.window.showInformationMessage(
           `AI建议移除 ${result.removedCount} 条日志语句，保留 ${result.keptCount} 条。是否应用？`,
-          "应用", "查看详情", "取消"
+          "应用",
+          "查看详情",
+          "取消"
         );
 
         if (action === "应用") {
@@ -217,18 +225,32 @@ async function aiSmartRemoveLogs(editor: vscode.TextEditor): Promise<void> {
           const success = await vscode.workspace.applyEdit(edit);
 
           if (success) {
-            vscode.window.showInformationMessage(`AI成功移除 ${result.removedCount} 条日志语句`);
+            vscode.window.showInformationMessage(
+              `AI成功移除 ${result.removedCount} 条日志语句`
+            );
           } else {
             vscode.window.showErrorMessage("应用AI建议失败");
           }
         } else if (action === "查看详情") {
-          // 显示AI的详细建议
-          const doc = await vscode.workspace.openTextDocument({
-            content: `# AI智能移除建议\n\n## 文件: ${document.fileName}\n## 语言: ${language}\n\n## 移除统计\n- 移除: ${result.removedCount} 条\n- 保留: ${result.keptCount} 条\n\n## 清理后的代码\n\`\`\`${language}\n${result.code}\n\`\`\``,
-            language: 'markdown'
-          });
-          
-          await vscode.window.showTextDocument(doc, { preview: false });
+          // 使用webview显示AI的详细建议
+          const content = `## AI智能移除建议
+
+## 移除统计
+- 移除: ${result.removedCount} 条
+- 保留: ${result.keptCount} 条
+
+## 清理后的代码
+\`\`\`${language}
+${result.code}
+\`\`\``;
+
+          const panel = webviewManager.createWebviewPanel(
+            "AI智能移除建议",
+            "removeLogAI.smartRemove",
+            content,
+            language,
+            document.fileName
+          );
         }
       }
     );
@@ -314,6 +336,8 @@ export function activate(context: vscode.ExtensionContext) {
 
   // 初始化AI服务
   aiService = new AIService();
+  // 初始化Webview管理器
+  webviewManager = new WebviewManager(context);
 
   // 注册命令
   const commands = [

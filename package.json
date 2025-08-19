@@ -9,7 +9,14 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:vscode-plugin-removelog.removeLogs",
+    "onCommand:vscode-plugin-removelog.removeLogsInFile",
+    "onCommand:vscode-plugin-removelog.removeLogsInWorkspace",
+    "onCommand:vscode-plugin-removelog.aiAnalyzeLogs",
+    "onCommand:vscode-plugin-removelog.aiGenerateLogs",
+    "onCommand:vscode-plugin-removelog.aiCodeQuality"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
@@ -61,19 +68,19 @@
     "configuration": {
       "title": "Remove Log AI",
       "properties": {
-        "removeLogAI.openaiApiKey": {
+        "removeLogAI.deepseekApiKey": {
           "type": "string",
           "default": "",
-          "description": "OpenAI API密钥",
+          "description": "DeepSeek API密钥",
           "scope": "application"
         },
         "removeLogAI.model": {
           "type": "string",
-          "default": "gpt-3.5-turbo",
+          "default": "deepseek-chat",
           "enum": [
-            "gpt-3.5-turbo",
-            "gpt-4",
-            "gpt-4-turbo"
+            "deepseek-chat",
+            "deepseek-coder",
+            "deepseek-chat-instruct"
           ],
           "description": "使用的AI模型",
           "scope": "application"
@@ -97,7 +104,7 @@
     "test": "vscode-test"
   },
   "dependencies": {
-    "openai": "^4.104.0"
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",

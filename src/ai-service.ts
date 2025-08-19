@@ -1,30 +1,31 @@
 import * as vscode from "vscode";
-import OpenAI from "openai";
 
 export class AIService {
-  private openai: OpenAI | null = null;
+  private deepseekApiKey: string | null = null;
   private config: vscode.WorkspaceConfiguration;
 
   constructor() {
     this.config = vscode.workspace.getConfiguration("removeLogAI");
-    this.initializeOpenAI();
+    this.initializeDeepSeek();
   }
 
-  private initializeOpenAI(): void {
-    const apiKey = this.config.get<string>("openaiApiKey");
+  private initializeDeepSeek(): void {
+    const apiKey = this.config.get<string>("deepseekApiKey");
     if (apiKey && apiKey.trim() !== "") {
-      this.openai = new OpenAI({
-        apiKey: apiKey.trim(),
-      });
+      this.deepseekApiKey = apiKey.trim();
     }
   }
 
   public async checkAPIKey(): Promise<boolean> {
-    if (!this.openai) {
+    if (!this.deepseekApiKey) {
       const apiKey = await this.promptForAPIKey();
       if (apiKey) {
-        this.config.update("openaiApiKey", apiKey, vscode.ConfigurationTarget.Global);
-        this.initializeOpenAI();
+        this.config.update(
+          "deepseekApiKey",
+          apiKey,
+          vscode.ConfigurationTarget.Global
+        );
+        this.initializeDeepSeek();
         return true;
       }
       return false;
@@ -34,11 +35,55 @@ export class AIService {
 
   private async promptForAPIKey(): Promise<string | undefined> {
     const apiKey = await vscode.window.showInputBox({
-      prompt: "请输入OpenAI API密钥",
+      prompt: "请输入DeepSeek API密钥",
       password: true,
       placeHolder: "sk-...",
     });
     return apiKey;
+  }
+
+  private async callDeepSeekAPI(prompt: string): Promise<string> {
+    if (!this.deepseekApiKey) {
+      throw new Error("未配置DeepSeek API密钥");
+    }
+
+    const model = this.config.get<string>("model", "deepseek-chat");
+    const maxTokens = this.config.get<number>("maxTokens", 1000);
+
+    try {
+      const response = await fetch(
+        "https://api.deepseek.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.deepseekApiKey}`,
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [
+              {
+                role: "user",
+                content: prompt,
+              },
+            ],
+            max_tokens: maxTokens,
+            temperature: 0.3,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `API请求失败: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const data = (await response.json()) as any;
+      return data.choices?.[0]?.message?.content || "API响应格式错误";
+    } catch (error) {
+      throw new Error(`DeepSeek API调用失败: ${error}`);
+    }
   }
 
   public async analyzeLogs(code: string, language: string): Promise<string> {
@@ -62,14 +107,8 @@ ${code}
 请用中文回答，格式要清晰易读。`;
 
     try {
-      const response = await this.openai!.chat.completions.create({
-        model: this.config.get<string>("model", "gpt-3.5-turbo"),
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: this.config.get<number>("maxTokens", 1000),
-        temperature: 0.3,
-      });
-
-      return response.choices[0]?.message?.content || "AI分析失败";
+      const response = await this.callDeepSeekAPI(prompt);
+      return response || "AI分析失败";
     } catch (error) {
       throw new Error(`AI分析失败: ${error}`);
     }
@@ -100,20 +139,17 @@ ${code}
 请用中文回答，代码要完整可运行。`;
 
     try {
-      const response = await this.openai!.chat.completions.create({
-        model: this.config.get<string>("model", "gpt-3.5-turbo"),
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: this.config.get<number>("maxTokens", 1000),
-        temperature: 0.4,
-      });
-
-      return response.choices[0]?.message?.content || "AI生成失败";
+      const response = await this.callDeepSeekAPI(prompt);
+      return response || "AI生成失败";
     } catch (error) {
       throw new Error(`AI生成失败: ${error}`);
     }
   }
 
-  public async analyzeCodeQuality(code: string, language: string): Promise<string> {
+  public async analyzeCodeQuality(
+    code: string,
+    language: string
+  ): Promise<string> {
     if (!(await this.checkAPIKey())) {
       throw new Error("未配置API密钥");
     }
@@ -140,20 +176,17 @@ ${code}
 请用中文回答，建议要具体可操作。`;
 
     try {
-      const response = await this.openai!.chat.completions.create({
-        model: this.config.get<string>("model", "gpt-3.5-turbo"),
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: this.config.get<number>("maxTokens", 1000),
-        temperature: 0.3,
-      });
-
-      return response.choices[0]?.message?.content || "AI分析失败";
+      const response = await this.callDeepSeekAPI(prompt);
+      return response || "AI分析失败";
     } catch (error) {
       throw new Error(`AI分析失败: ${error}`);
     }
   }
 
-  public async smartRemoveLogs(code: string, language: string): Promise<{ code: string; removedCount: number; keptCount: number }> {
+  public async smartRemoveLogs(
+    code: string,
+    language: string
+  ): Promise<{ code: string; removedCount: number; keptCount: number }> {
     if (!(await this.checkAPIKey())) {
       throw new Error("未配置API密钥");
     }
@@ -180,36 +213,35 @@ ${code}
 请用中文回答，代码要完整可运行。`;
 
     try {
-      const response = await this.openai!.chat.completions.create({
-        model: this.config.get<string>("model", "gpt-3.5-turbo"),
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: this.config.get<number>("maxTokens", 1500),
-        temperature: 0.2,
-      });
+      const response = await this.callDeepSeekAPI(prompt);
 
-      const content = response.choices[0]?.message?.content || "";
-      
+      const content = response || "";
+
       // 简单解析AI响应
       const codeMatch = content.match(/```(?:[a-z]*\n)?([\s\S]*?)```/);
-      const code = codeMatch ? codeMatch[1].trim() : code;
-      
+      const processedCode = codeMatch ? codeMatch[1].trim() : code;
+
       // 统计日志数量
       const logPatterns = [
         /console\.(log|error|warn|info|debug)\s*\([^)]*\);?\s*/g,
       ];
-      
+
       let removedCount = 0;
       let keptCount = 0;
-      
+
       for (const pattern of logPatterns) {
         const matches = code.match(pattern);
         if (matches) {
-          removedCount += matches.filter(match => !match.includes('console.error')).length;
-          keptCount += matches.filter(match => match.includes('console.error')).length;
+          removedCount += matches.filter(
+            (match) => !match.includes("console.error")
+          ).length;
+          keptCount += matches.filter((match) =>
+            match.includes("console.error")
+          ).length;
         }
       }
 
-      return { code, removedCount, keptCount };
+      return { code: processedCode, removedCount, keptCount };
     } catch (error) {
       throw new Error(`智能移除失败: ${error}`);
     }

@@ -15,6 +15,7 @@
 - **AI日志生成**: 根据代码上下文生成合适的日志语句
 - **AI代码质量分析**: 分析代码质量并提供改进建议
 - **AI智能移除**: 基于AI建议智能移除日志语句
+- **美观的Webview界面**: AI分析结果以现代化HTML界面展示，支持代码复制和应用
 
 ## 安装
 
@@ -52,16 +53,16 @@
 
 ```json
 {
-  "removeLogAI.openaiApiKey": "你的OpenAI API密钥",
-  "removeLogAI.model": "gpt-3.5-turbo",
+  "removeLogAI.deepseekApiKey": "你的DeepSeek API密钥",
+  "removeLogAI.model": "deepseek-chat",
   "removeLogAI.maxTokens": 1000
 }
 ```
 
 ### 配置说明
 
-- **openaiApiKey**: OpenAI API密钥（必需）
-- **model**: 使用的AI模型，可选值：`gpt-3.5-turbo`、`gpt-4`、`gpt-4-turbo`
+- **deepseekApiKey**: DeepSeek API密钥（必需）
+- **model**: 使用的AI模型，可选值：`deepseek-chat`、`deepseek-coder`、`deepseek-chat-instruct`
 - **maxTokens**: AI响应的最大token数
 
 ## 支持的文件类型
@@ -100,15 +101,15 @@
 
 ## 注意事项
 
-1. **API密钥安全**: 请妥善保管你的OpenAI API密钥
+1. **API密钥安全**: 请妥善保管你的DeepSeek API密钥
 2. **网络连接**: AI功能需要网络连接才能使用
-3. **API费用**: 使用AI功能会产生OpenAI API调用费用
+3. **API费用**: 使用AI功能会产生DeepSeek API调用费用
 4. **代码备份**: 建议在重要操作前备份代码
 
 ## 故障排除
 
 ### AI功能无法使用
-1. 检查是否配置了正确的API密钥
+1. 检查是否配置了正确的DeepSeek API密钥
 2. 确认网络连接正常
 3. 检查API密钥是否有效
 
