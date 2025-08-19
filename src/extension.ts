@@ -408,6 +408,18 @@ export function activate(context: vscode.ExtensionContext) {
         }
       }
     ),
+
+    vscode.commands.registerCommand(
+      "vscode-plugin-removelog.aiSmartRemoveLogs",
+      () => {
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+          aiSmartRemoveLogs(editor);
+        } else {
+          vscode.window.showErrorMessage("请先打开一个文件");
+        }
+      }
+    ),
   ];
 
   // 添加上下文菜单

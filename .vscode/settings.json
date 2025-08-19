@@ -29,7 +29,7 @@
   "terminal.integrated.defaultProfile.osx": "zsh",
   "terminal.integrated.defaultProfile.linux": "bash",
   "terminal.integrated.defaultProfile.windows": "PowerShell",
-  "removeLogAI.deepseekApiKey": "",
+  "removeLogAI.deepseekApiKey": "sk-d6ab2f7cb09842afb5e51d119b1370c5",
   "removeLogAI.model": "deepseek-chat",
-  "removeLogAI.maxTokens": 1000,
+  "removeLogAI.maxTokens": 10000
 }

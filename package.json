@@ -15,7 +15,8 @@
     "onCommand:vscode-plugin-removelog.removeLogsInWorkspace",
     "onCommand:vscode-plugin-removelog.aiAnalyzeLogs",
     "onCommand:vscode-plugin-removelog.aiGenerateLogs",
-    "onCommand:vscode-plugin-removelog.aiCodeQuality"
+    "onCommand:vscode-plugin-removelog.aiCodeQuality",
+    "onCommand:vscode-plugin-removelog.aiSmartRemoveLogs"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -48,6 +49,11 @@
       {
         "command": "vscode-plugin-removelog.aiCodeQuality",
         "title": "AI代码质量分析",
+        "category": "Remove Log AI"
+      },
+      {
+        "command": "vscode-plugin-removelog.aiSmartRemoveLogs",
+        "title": "AI智能移除日志语句",
         "category": "Remove Log AI"
       }
     ],

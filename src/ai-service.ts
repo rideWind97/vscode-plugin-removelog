@@ -51,7 +51,9 @@ export class AIService {
     const maxTokens = this.config.get<number>("maxTokens", 1000);
 
     try {
-      const response = await fetch(
+      // 使用Node.js内置的http模块或动态导入node-fetch
+      const fetch = await import("node-fetch");
+      const response = await fetch.default(
         "https://api.deepseek.com/v1/chat/completions",
         {
           method: "POST",
