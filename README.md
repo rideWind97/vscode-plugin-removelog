@@ -1,153 +1,136 @@
 # Remove Log - VS Code 插件
 
-一个强大的 VS Code 插件，用于快速移除代码中的日志语句，支持多种编程语言。
+一个强大的VS Code插件，用于快速移除代码中的日志语句，并集成AI智能分析功能。
 
 ## 功能特性
 
-- 🚀 **快速移除日志语句** - 一键移除 console.log、console.error 等日志语句
-- 🌍 **多语言支持** - 支持 JavaScript、TypeScript、Python、Java、C++、PHP、Go 等多种编程语言
-- 📁 **灵活操作** - 支持单个文件、整个工作区的日志移除
-- ⌨️ **快捷键支持** - 提供便捷的键盘快捷键操作
-- 🔍 **智能识别** - 自动识别各种格式的日志语句，包括注释中的日志
-- 📊 **进度显示** - 批量处理时显示详细的进度信息
+### 🚀 基础功能
+- **快速移除日志**: 一键移除 `console.log`、`console.error` 等日志语句
+- **多文件支持**: 支持单个文件或整个工作区的日志清理
+- **多语言支持**: 支持 JavaScript、TypeScript、Python、Java、C++ 等多种编程语言
+- **智能识别**: 自动识别注释中的日志语句
 
-## 安装方法
+### 🤖 AI 智能功能
+- **AI日志分析**: 智能分析哪些日志应该保留，哪些可以移除
+- **AI日志生成**: 根据代码上下文生成合适的日志语句
+- **AI代码质量分析**: 分析代码质量并提供改进建议
+- **AI智能移除**: 基于AI建议智能移除日志语句
 
-1. 在 VS Code 中按 `Ctrl+Shift+X` (Windows/Linux) 或 `Cmd+Shift+X` (macOS) 打开扩展面板
-2. 搜索 "Remove Log" 或 "移除日志语句"
-3. 点击安装按钮
+## 安装
+
+1. 在VS Code中按 `Ctrl+Shift+X` 打开扩展面板
+2. 搜索 "Remove Log"
+3. 点击安装
 
 ## 使用方法
 
-### 方法一：命令面板
+### 基础功能
 
-1. 按 `Ctrl+Shift+P` (Windows/Linux) 或 `Cmd+Shift+P` (macOS) 打开命令面板
-2. 输入以下命令之一：
-   - `移除日志语句` - 移除当前文件中的日志语句
-   - `移除当前文件中的日志语句` - 移除当前文件中的日志语句
-   - `移除工作区中的日志语句` - 移除整个工作区中的日志语句
+#### 移除当前文件中的日志语句
+- 快捷键: `Ctrl+Shift+R` (Windows/Linux) 或 `Cmd+Shift+R` (macOS)
+- 命令面板: `Ctrl+Shift+P` → "移除当前文件中的日志语句"
+- 右键菜单: 在代码编辑器中右键 → "移除日志语句"
 
-### 方法二：快捷键
+#### 移除工作区中的日志语句
+- 命令面板: `Ctrl+Shift+P` → "移除工作区中的日志语句"
 
-- **移除当前文件中的日志语句**: `Ctrl+Shift+R` (Windows/Linux) 或 `Cmd+Shift+R` (macOS)
+### AI 功能
 
-### 方法三：右键菜单
+#### AI智能分析日志语句
+- 快捷键: `Ctrl+Shift+A` (Windows/Linux) 或 `Cmd+Shift+A` (macOS)
+- 命令面板: `Ctrl+Shift+P` → "AI智能分析日志语句"
 
-1. 在代码编辑器中右键点击
-2. 选择 "移除日志语句" 选项
+#### AI智能生成日志语句
+- 命令面板: `Ctrl+Shift+P` → "AI智能生成日志语句"
 
-### 方法四：代码操作
+#### AI代码质量分析
+- 命令面板: `Ctrl+Shift+P` → "AI代码质量分析"
 
-当光标位于包含日志语句的行时，VS Code 会显示快速修复建议，点击即可移除该行的日志语句。
+## 配置
 
-## 支持的日志语句格式
+在VS Code设置中配置AI功能：
 
-插件能够识别并移除以下格式的日志语句：
-
-### JavaScript/TypeScript
-```javascript
-console.log("Hello World");
-console.error("Error message");
-console.warn("Warning message");
-console.info("Info message");
-console.debug("Debug message");
-
-// 带注释的日志
-// console.log("Commented log");
-/* console.log("Multi-line comment log"); */
+```json
+{
+  "removeLogAI.openaiApiKey": "你的OpenAI API密钥",
+  "removeLogAI.model": "gpt-3.5-turbo",
+  "removeLogAI.maxTokens": 1000
+}
 ```
 
-### Python
-```python
-print("Hello World")
-logging.info("Info message")
-logging.error("Error message")
-```
+### 配置说明
 
-### Java
-```java
-System.out.println("Hello World");
-System.err.println("Error message");
-logger.info("Info message");
-```
+- **openaiApiKey**: OpenAI API密钥（必需）
+- **model**: 使用的AI模型，可选值：`gpt-3.5-turbo`、`gpt-4`、`gpt-4-turbo`
+- **maxTokens**: AI响应的最大token数
 
-### 其他语言
-- C/C++: `printf()`, `cout <<`, `fprintf()`
-- PHP: `echo`, `print_r()`, `var_dump()`
-- Go: `fmt.Println()`, `log.Println()`
-- Ruby: `puts`, `p`, `logger.info`
-- Swift: `print()`, `NSLog()`
+## 支持的文件类型
+
+- JavaScript (`.js`)
+- TypeScript (`.ts`)
+- React JSX (`.jsx`)
+- React TSX (`.tsx`)
+- Vue (`.vue`)
+- Python (`.py`)
+- Java (`.java`)
+- C++ (`.cpp`, `.c`)
+- C# (`.cs`)
+- PHP (`.php`)
+- Ruby (`.rb`)
+- Go (`.go`)
+- Rust (`.rs`)
+- Swift (`.swift`)
 
 ## 使用场景
 
 ### 开发阶段
 - 快速清理调试代码
-- 移除临时的日志输出
-- 准备代码发布版本
+- 移除临时日志语句
+- 保持代码整洁
 
-### 代码审查
-- 清理代码中的调试语句
-- 提高代码质量
-- 减少不必要的输出
+### 生产环境准备
+- 智能分析哪些日志应该保留
+- 移除不必要的调试信息
+- 优化代码性能
 
-### 生产环境
-- 移除敏感信息
-- 优化性能
-- 清理代码
+### 代码质量提升
+- AI分析代码结构
+- 获取改进建议
+- 学习最佳实践
 
 ## 注意事项
 
-⚠️ **重要提醒**：
-- 插件会直接修改文件内容，建议在操作前备份重要文件
-- 移除操作不可逆，请谨慎使用
-- 建议在版本控制系统中提交当前更改后再使用插件
-
-## 配置选项
-
-插件目前使用默认配置，无需额外设置。支持的文件类型包括：
-- JavaScript/TypeScript: `.js`, `.ts`, `.jsx`, `.tsx`
-- Python: `.py`
-- Java: `.java`
-- C/C++: `.c`, `.cpp`, `.h`, `.hpp`
-- PHP: `.php`
-- Go: `.go`
-- Ruby: `.rb`
-- Swift: `.swift`
-- Vue: `.vue`
+1. **API密钥安全**: 请妥善保管你的OpenAI API密钥
+2. **网络连接**: AI功能需要网络连接才能使用
+3. **API费用**: 使用AI功能会产生OpenAI API调用费用
+4. **代码备份**: 建议在重要操作前备份代码
 
 ## 故障排除
 
-### 插件无法激活
-- 确保 VS Code 版本 >= 1.103.0
-- 检查是否有其他插件冲突
-- 尝试重新加载 VS Code 窗口
+### AI功能无法使用
+1. 检查是否配置了正确的API密钥
+2. 确认网络连接正常
+3. 检查API密钥是否有效
 
-### 无法识别日志语句
-- 确保文件类型受支持
-- 检查日志语句格式是否正确
-- 尝试手动触发命令
-
-### 批量处理失败
-- 检查文件权限
-- 确保工作区路径正确
-- 查看 VS Code 输出面板的错误信息
-
-## 更新日志
-
-### 0.0.1
-- 初始版本发布
-- 支持基本的日志语句移除功能
-- 支持单个文件和整个工作区的操作
-- 提供快捷键和右键菜单支持
+### 插件无响应
+1. 重启VS Code
+2. 检查插件是否正确安装
+3. 查看VS Code输出面板中的错误信息
 
 ## 贡献
 
-欢迎提交 Issue 和 Pull Request 来改进这个插件！
+欢迎提交Issue和Pull Request来改进这个插件！
 
 ## 许可证
 
 MIT License
 
----
+## 更新日志
 
-**享受编码的乐趣！** 🎉
+### v0.0.1
+- 基础日志移除功能
+- AI智能分析功能
+- AI日志生成功能
+- AI代码质量分析
+- 多语言支持
+- 配置管理

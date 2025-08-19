@@ -1,7 +1,7 @@
 {
   "name": "vscode-plugin-removelog",
   "displayName": "Remove Log - 移除日志语句",
-  "description": "快速移除代码中的 console.log、console.error 等日志语句",
+  "description": "快速移除代码中的 console.log、console.error 等日志语句，集成AI智能分析",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.103.0"
@@ -27,6 +27,21 @@
         "command": "vscode-plugin-removelog.removeLogsInWorkspace",
         "title": "移除工作区中的日志语句",
         "category": "Remove Log"
+      },
+      {
+        "command": "vscode-plugin-removelog.aiAnalyzeLogs",
+        "title": "AI智能分析日志语句",
+        "category": "Remove Log AI"
+      },
+      {
+        "command": "vscode-plugin-removelog.aiGenerateLogs",
+        "title": "AI智能生成日志语句",
+        "category": "Remove Log AI"
+      },
+      {
+        "command": "vscode-plugin-removelog.aiCodeQuality",
+        "title": "AI代码质量分析",
+        "category": "Remove Log AI"
       }
     ],
     "keybindings": [
@@ -35,8 +50,42 @@
         "key": "ctrl+shift+r",
         "mac": "cmd+shift+r",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "vscode-plugin-removelog.aiAnalyzeLogs",
+        "key": "ctrl+shift+a",
+        "mac": "cmd+shift+a",
+        "when": "editorTextFocus"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Remove Log AI",
+      "properties": {
+        "removeLogAI.openaiApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "OpenAI API密钥",
+          "scope": "application"
+        },
+        "removeLogAI.model": {
+          "type": "string",
+          "default": "gpt-3.5-turbo",
+          "enum": [
+            "gpt-3.5-turbo",
+            "gpt-4",
+            "gpt-4-turbo"
+          ],
+          "description": "使用的AI模型",
+          "scope": "application"
+        },
+        "removeLogAI.maxTokens": {
+          "type": "number",
+          "default": 1000,
+          "description": "AI响应的最大token数",
+          "scope": "application"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "pnpm run package",
@@ -44,23 +93,24 @@
     "watch": "webpack --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
     "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
     "lint": "eslint src",
     "test": "vscode-test"
   },
+  "dependencies": {
+    "openai": "^4.104.0"
+  },
   "devDependencies": {
-    "@types/vscode": "^1.103.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
+    "@types/vscode": "^1.103.0",
     "@typescript-eslint/eslint-plugin": "^8.39.0",
     "@typescript-eslint/parser": "^8.39.0",
-    "eslint": "^9.32.0",
-    "typescript": "^5.9.2",
-    "ts-loader": "^9.5.2",
-    "webpack": "^5.101.0",
-    "webpack-cli": "^6.0.1",
     "@vscode/test-cli": "^0.0.11",
-    "@vscode/test-electron": "^2.5.2"
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.32.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.9.2",
+    "webpack": "^5.101.0",
+    "webpack-cli": "^6.0.1"
   }
 }

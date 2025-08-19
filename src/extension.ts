@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
+import { AIService } from "./ai-service";
 
 // 日志语句的正则表达式模式
 const LOG_PATTERNS = [
@@ -13,6 +14,9 @@ const LOG_PATTERNS = [
   // 多行注释中的 console 语句
   /\/\*\s*console\.(log|error|warn|info|debug)\s*\([^)]*\);?\s*\*\//g,
 ];
+
+// AI服务实例
+let aiService: AIService;
 
 // 移除文本中的日志语句
 function removeLogsFromText(text: string): { text: string; count: number } {
@@ -28,6 +32,29 @@ function removeLogsFromText(text: string): { text: string; count: number } {
   }
 
   return { text: result, count: totalCount };
+}
+
+// 获取文件语言标识
+function getLanguageId(document: vscode.TextDocument): string {
+  const languageMap: { [key: string]: string } = {
+    'javascript': 'JavaScript',
+    'typescript': 'TypeScript',
+    'javascriptreact': 'React JSX',
+    'typescriptreact': 'React TSX',
+    'vue': 'Vue',
+    'python': 'Python',
+    'java': 'Java',
+    'cpp': 'C++',
+    'c': 'C',
+    'csharp': 'C#',
+    'php': 'PHP',
+    'ruby': 'Ruby',
+    'go': 'Go',
+    'rust': 'Rust',
+    'swift': 'Swift'
+  };
+  
+  return languageMap[document.languageId] || document.languageId;
 }
 
 // 移除当前文件中的日志语句
@@ -58,6 +85,155 @@ async function removeLogsInFile(editor: vscode.TextEditor): Promise<void> {
     vscode.window.showInformationMessage(`成功移除 ${count} 条日志语句`);
   } else {
     vscode.window.showErrorMessage("移除日志语句失败");
+  }
+}
+
+// AI智能分析日志语句
+async function aiAnalyzeLogs(editor: vscode.TextEditor): Promise<void> {
+  const document = editor.document;
+  const text = document.getText();
+  const language = getLanguageId(document);
+
+  try {
+    await vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: "AI正在分析日志语句...",
+        cancellable: false,
+      },
+      async () => {
+        const analysis = await aiService.analyzeLogs(text, language);
+        
+        // 创建新的文档显示分析结果
+        const doc = await vscode.workspace.openTextDocument({
+          content: `# AI日志分析结果\n\n## 文件: ${document.fileName}\n## 语言: ${language}\n\n${analysis}`,
+          language: 'markdown'
+        });
+        
+        await vscode.window.showTextDocument(doc, { preview: false });
+      }
+    );
+  } catch (error) {
+    vscode.window.showErrorMessage(`AI分析失败: ${error}`);
+  }
+}
+
+// AI智能生成日志语句
+async function aiGenerateLogs(editor: vscode.TextEditor): Promise<void> {
+  const document = editor.document;
+  const text = document.getText();
+  const language = getLanguageId(document);
+
+  try {
+    await vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: "AI正在生成日志语句...",
+        cancellable: false,
+      },
+      async () => {
+        const generatedCode = await aiService.generateLogs(text, language);
+        
+        // 创建新的文档显示生成的代码
+        const doc = await vscode.workspace.openTextDocument({
+          content: `# AI生成的日志代码\n\n## 文件: ${document.fileName}\n## 语言: ${language}\n\n${generatedCode}`,
+          language: 'markdown'
+        });
+        
+        await vscode.window.showTextDocument(doc, { preview: false });
+      }
+    );
+  } catch (error) {
+    vscode.window.showErrorMessage(`AI生成失败: ${error}`);
+  }
+}
+
+// AI代码质量分析
+async function aiCodeQuality(editor: vscode.TextEditor): Promise<void> {
+  const document = editor.document;
+  const text = document.getText();
+  const language = getLanguageId(document);
+
+  try {
+    await vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: "AI正在分析代码质量...",
+        cancellable: false,
+      },
+      async () => {
+        const analysis = await aiService.analyzeCodeQuality(text, language);
+        
+        // 创建新的文档显示分析结果
+        const doc = await vscode.workspace.openTextDocument({
+          content: `# AI代码质量分析\n\n## 文件: ${document.fileName}\n## 语言: ${language}\n\n${analysis}`,
+          language: 'markdown'
+        });
+        
+        await vscode.window.showTextDocument(doc, { preview: false });
+      }
+    );
+  } catch (error) {
+    vscode.window.showErrorMessage(`AI分析失败: ${error}`);
+  }
+}
+
+// AI智能移除日志语句
+async function aiSmartRemoveLogs(editor: vscode.TextEditor): Promise<void> {
+  const document = editor.document;
+  const text = document.getText();
+  const language = getLanguageId(document);
+
+  try {
+    await vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: "AI正在智能移除日志语句...",
+        cancellable: false,
+      },
+      async () => {
+        const result = await aiService.smartRemoveLogs(text, language);
+        
+        if (result.removedCount === 0) {
+          vscode.window.showInformationMessage("AI建议保留所有日志语句");
+          return;
+        }
+
+        // 询问用户是否应用AI的建议
+        const action = await vscode.window.showInformationMessage(
+          `AI建议移除 ${result.removedCount} 条日志语句，保留 ${result.keptCount} 条。是否应用？`,
+          "应用", "查看详情", "取消"
+        );
+
+        if (action === "应用") {
+          // 应用AI的建议
+          const edit = new vscode.WorkspaceEdit();
+          const fullRange = new vscode.Range(
+            document.positionAt(0),
+            document.positionAt(text.length)
+          );
+
+          edit.replace(document.uri, fullRange, result.code);
+          const success = await vscode.workspace.applyEdit(edit);
+
+          if (success) {
+            vscode.window.showInformationMessage(`AI成功移除 ${result.removedCount} 条日志语句`);
+          } else {
+            vscode.window.showErrorMessage("应用AI建议失败");
+          }
+        } else if (action === "查看详情") {
+          // 显示AI的详细建议
+          const doc = await vscode.workspace.openTextDocument({
+            content: `# AI智能移除建议\n\n## 文件: ${document.fileName}\n## 语言: ${language}\n\n## 移除统计\n- 移除: ${result.removedCount} 条\n- 保留: ${result.keptCount} 条\n\n## 清理后的代码\n\`\`\`${language}\n${result.code}\n\`\`\``,
+            language: 'markdown'
+          });
+          
+          await vscode.window.showTextDocument(doc, { preview: false });
+        }
+      }
+    );
+  } catch (error) {
+    vscode.window.showErrorMessage(`AI智能移除失败: ${error}`);
   }
 }
 
@@ -136,6 +312,9 @@ async function removeLogsInWorkspace(): Promise<void> {
 export function activate(context: vscode.ExtensionContext) {
   console.log("Remove Log 插件已激活");
 
+  // 初始化AI服务
+  aiService = new AIService();
+
   // 注册命令
   const commands = [
     vscode.commands.registerCommand(
@@ -168,6 +347,43 @@ export function activate(context: vscode.ExtensionContext) {
         removeLogsInWorkspace();
       }
     ),
+
+    // AI相关命令
+    vscode.commands.registerCommand(
+      "vscode-plugin-removelog.aiAnalyzeLogs",
+      () => {
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+          aiAnalyzeLogs(editor);
+        } else {
+          vscode.window.showErrorMessage("请先打开一个文件");
+        }
+      }
+    ),
+
+    vscode.commands.registerCommand(
+      "vscode-plugin-removelog.aiGenerateLogs",
+      () => {
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+          aiGenerateLogs(editor);
+        } else {
+          vscode.window.showErrorMessage("请先打开一个文件");
+        }
+      }
+    ),
+
+    vscode.commands.registerCommand(
+      "vscode-plugin-removelog.aiCodeQuality",
+      () => {
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+          aiCodeQuality(editor);
+        } else {
+          vscode.window.showErrorMessage("请先打开一个文件");
+        }
+      }
+    ),
   ];
 
   // 添加上下文菜单
@@ -197,12 +413,33 @@ export function activate(context: vscode.ExtensionContext) {
               title: "移除日志语句",
             };
             actions.push(removeAction);
+
+            // 添加AI智能移除选项
+            const aiRemoveAction = new vscode.CodeAction(
+              "AI智能移除",
+              vscode.CodeActionKind.QuickFix
+            );
+            aiRemoveAction.command = {
+              command: "vscode-plugin-removelog.aiSmartRemoveLogs",
+              title: "AI智能移除",
+            };
+            actions.push(aiRemoveAction);
           }
 
           return actions;
         },
       }
     )
+  );
+
+  // 监听配置变化
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      if (event.affectsConfiguration("removeLogAI")) {
+        // 重新初始化AI服务
+        aiService = new AIService();
+      }
+    })
   );
 }
 
